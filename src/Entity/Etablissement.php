@@ -2,11 +2,15 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\EtablissementRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: EtablissementRepository::class)]
+#[ApiResource]
 class Etablissement
 {
     #[ORM\Id]
@@ -24,13 +28,29 @@ class Etablissement
     private ?string $image = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
-    private ?\DateTimeInterface $heureÃ_open = null;
+    private ?\DateTimeInterface $heureï¿½_open = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
     private ?\DateTimeInterface $heure_close = null;
 
     #[ORM\Column(length: 255)]
     private ?string $prixH = null;
+
+    #[ORM\ManyToMany(targetEntity: Equipiers::class, mappedBy: 'Etablissement')]
+    private Collection $Equipiers;
+
+    #[ORM\ManyToMany(targetEntity: Services::class, inversedBy: 'Etablissements')]
+    private Collection $Services;
+
+    #[ORM\ManyToMany(targetEntity: Prestataire::class, inversedBy: 'Etablissements')]
+    private Collection $Prestataire;
+
+    public function __construct()
+    {
+        $this->Equipiers = new ArrayCollection();
+        $this->Services = new ArrayCollection();
+        $this->Prestataire = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -80,14 +100,14 @@ class Etablissement
         return $this;
     }
 
-    public function getHeureÃOpen(): ?\DateTimeInterface
+    public function getHeureï¿½Open(): ?\DateTimeInterface
     {
-        return $this->heureÃ_open;
+        return $this->heureï¿½_open;
     }
 
-    public function setHeureÃOpen(\DateTimeInterface $heureÃ_open): static
+    public function setHeureï¿½Open(\DateTimeInterface $heureï¿½_open): static
     {
-        $this->heureÃ_open = $heureÃ_open;
+        $this->heureï¿½_open = $heureï¿½_open;
 
         return $this;
     }
@@ -112,6 +132,81 @@ class Etablissement
     public function setPrixH(string $prixH): static
     {
         $this->prixH = $prixH;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Equipiers>
+     */
+    public function getEquipiers(): Collection
+    {
+        return $this->Equipiers;
+    }
+
+    public function addEquipier(Equipiers $equipier): static
+    {
+        if (!$this->Equipiers->contains($equipier)) {
+            $this->Equipiers->add($equipier);
+            $equipier->addEtablissement($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEquipier(Equipiers $equipier): static
+    {
+        if ($this->Equipiers->removeElement($equipier)) {
+            $equipier->removeEtablissement($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Services>
+     */
+    public function getServices(): Collection
+    {
+        return $this->Services;
+    }
+
+    public function addService(Services $service): static
+    {
+        if (!$this->Services->contains($service)) {
+            $this->Services->add($service);
+        }
+
+        return $this;
+    }
+
+    public function removeService(Services $service): static
+    {
+        $this->Services->removeElement($service);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Prestataire>
+     */
+    public function getPrestataire(): Collection
+    {
+        return $this->Prestataire;
+    }
+
+    public function addPrestataire(Prestataire $prestataire): static
+    {
+        if (!$this->Prestataire->contains($prestataire)) {
+            $this->Prestataire->add($prestataire);
+        }
+
+        return $this;
+    }
+
+    public function removePrestataire(Prestataire $prestataire): static
+    {
+        $this->Prestataire->removeElement($prestataire);
 
         return $this;
     }

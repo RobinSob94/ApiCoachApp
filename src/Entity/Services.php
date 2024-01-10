@@ -2,10 +2,14 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ServicesRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ServicesRepository::class)]
+#[ApiResource]
 class Services
 {
     #[ORM\Id]
@@ -21,6 +25,14 @@ class Services
 
     #[ORM\Column(length: 255)]
     private ?string $prix = null;
+
+    #[ORM\ManyToMany(targetEntity: Etablissement::class, mappedBy: 'Services')]
+    private Collection $Etablissements;
+
+    public function __construct()
+    {
+        $this->Etablissements = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -66,6 +78,33 @@ class Services
     public function setPrix(string $prix): static
     {
         $this->prix = $prix;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Etablissement>
+     */
+    public function getEtablissements(): Collection
+    {
+        return $this->Etablissements;
+    }
+
+    public function addEtablissement(Etablissement $etablissement): static
+    {
+        if (!$this->Etablissements->contains($etablissement)) {
+            $this->Etablissements->add($etablissement);
+            $etablissement->addService($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEtablissement(Etablissement $etablissement): static
+    {
+        if ($this->Etablissements->removeElement($etablissement)) {
+            $etablissement->removeService($this);
+        }
 
         return $this;
     }
