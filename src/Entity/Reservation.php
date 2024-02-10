@@ -33,10 +33,10 @@ class Reservation
     #[ORM\ManyToMany(targetEntity: Equipiers::class, mappedBy: 'Reservation')]
     private Collection $Equipiers;
 
-    #[ORM\ManyToMany(targetEntity: self::class, inversedBy: 'Reservations')]
+    #[ORM\ManyToMany(targetEntity: Reservations::class, mappedBy: 'Reservations')]
     private Collection $Services;
 
-    #[ORM\ManyToMany(targetEntity: self::class, mappedBy: 'Services')]
+    #[ORM\ManyToMany(targetEntity: Services::class, mappedBy: 'Services')]
     private Collection $Reservations;
 
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'Reservation')]
