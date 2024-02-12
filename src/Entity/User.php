@@ -3,15 +3,22 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
-#[ApiResource]
-class User
+#[ApiResource(
+    operations: [
+        new GetCollection()
+    ]
+)]
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -26,9 +33,6 @@ class User
 
     #[ORM\Column(length: 255)]
     private ?string $email = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $mdp = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $updatedAt = null;
@@ -261,4 +265,8 @@ class User
         // $this->plainPassword = null;
     }
 
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
+    }
 }
