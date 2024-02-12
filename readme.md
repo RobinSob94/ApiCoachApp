@@ -78,3 +78,22 @@ If make is not enabled or if it doesn't work :
 > docker compose exec php php bin/console doctrine:database:create --if-not-exists
 > docker compose exec php php bin/console doctrine:migrations:migrate -n
 ```
+
+
+Dernières avancées sur le JWT token
+Le site utilisé, https://api-platform.com/docs/core/jwt/
+
+Les avancées -->    
+- Dans le swagger UI j'ai le bouton authorize qui marche, je n'ai pas encore tester ce qu'il fait
+- Toujours dans le swagger UI j'ai la route /auth qui apparait maintenant mais c'est la route api/token
+qui devrait passer. 
+- J'ai refait tout le security.yaml en fonction du tuto.
+- J'ai modifié le lexik_kwt_authentication.yaml
+- Après vérification le seul moyen de passer par un auth dans api platform est de passer par le JWT
+- Il semble que l'on puisse sécuriser les routes directement dans le swagger UI mais je n'ai pas test
+- La mise en place d'un access control dans le security.yaml provoque une erreur disant que l'on ne peut
+pas override le access control. Mais il faut que l'on mette des restriction à l'accès du swaggerUI
+et à l'access à ses docs.
+- Problème sur la route du login check dans le swagger ui, il ne trouve pas la a route dans le controller
+pourtant la route est bien accessible si l'on passe par l'URL. On se prend juste un méthodes non valide,
+il faut une méthode post.
