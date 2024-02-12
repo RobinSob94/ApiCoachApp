@@ -12,6 +12,7 @@ class AuthController extends AbstractController
     /**
      * @Route("/api/token", name="app_generate_token", methods={"POST"})
      */
+
     public function generateToken(JWTTokenManagerInterface $jwtManager): JsonResponse
     {
         $user = $this->getUser(); //A personnaliser en fonction de notre système d'auth

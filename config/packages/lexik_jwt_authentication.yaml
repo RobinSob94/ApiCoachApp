@@ -2,4 +2,9 @@ lexik_jwt_authentication:
     secret_key: '%kernel.project_dir%/config/jwt/private.pem'  # chemin vers la clé privée
     public_key: '%kernel.project_dir%/config/jwt/public.pem'   # chemin vers la clé publique
     pass_phrase: 'JesuisTropBeauOui'                           # votre passphrase pour la clé privée
-    token_ttl: 3600                                            # durée de vie du token en secondes (pour la démo j'ai mis une heure)
+    token_ttl: 3600
+    api_platform:
+        check_path: /api/token
+        username_path: email
+        password_path: password
+    # durée de vie du token en secondes (pour la démo j'ai mis une heure)
