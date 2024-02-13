@@ -51,14 +51,30 @@ class Equipiers
         return $this;
     }
 
-    public function getJoursTravail(): ?\DateTimeInterface
+    public function getJoursTravail():  array
     {
+        $jours_travail= $this->jours_travail;
         return $this->jours_travail;
     }
 
-    public function setJoursTravail(\DateTimeInterface $jours_travail): static
+    public function setJoursTravail(array $jours_travail): static
     {
         $this->jours_travail = $jours_travail;
+
+        return $this;
+    }
+    public function addJoursTravail(string $jours_travail): self
+    {
+        if (!in_array($jours_travail, $this->jours_travail)) {
+            $this->jours_travail[] = $jours_travail;
+        }
+
+        return $this;
+    }
+
+    public function removeJoursTravail(string $jours_travail): self
+    {
+        $this->jours_travail = array_diff($this->jours_travail, [$jours_travail]);
 
         return $this;
     }
