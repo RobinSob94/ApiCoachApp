@@ -18,8 +18,8 @@ class Equipiers
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $jours_travail = null;
+    #[ORM\Column(type: Types::SIMPLE_ARRAY)]
+    private ?string $jours_travail = null;
 
     #[ORM\Column(length: 255)]
     private ?string $nom = null;
