@@ -41,16 +41,17 @@ class Prestataire
     #[ORM\Column(length: 255)]
     private ?string $mail = null;
 
-    #[ORM\ManyToMany(targetEntity: Etablissement::class, mappedBy: 'Prestataire')]
-    private Collection $Etablissements;
 
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'Prestataire')]
     private Collection $Users;
 
+    #[ORM\OneToMany(mappedBy: 'prestataire', targetEntity: Etablissement::class)]
+    private Collection $Etablissements;
+
     public function __construct()
     {
-        $this->Etablissements = new ArrayCollection();
         $this->Users = new ArrayCollection();
+        $this->Etablissements = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -162,33 +163,6 @@ class Prestataire
     }
 
     /**
-     * @return Collection<int, Etablissement>
-     */
-    public function getEtablissements(): Collection
-    {
-        return $this->Etablissements;
-    }
-
-    public function addEtablissement(Etablissement $etablissement): static
-    {
-        if (!$this->Etablissements->contains($etablissement)) {
-            $this->Etablissements->add($etablissement);
-            $etablissement->addPrestataire($this);
-        }
-
-        return $this;
-    }
-
-    public function removeEtablissement(Etablissement $etablissement): static
-    {
-        if ($this->Etablissements->removeElement($etablissement)) {
-            $etablissement->removePrestataire($this);
-        }
-
-        return $this;
-    }
-
-    /**
      * @return Collection<int, User>
      */
     public function getUsers(): Collection
@@ -210,6 +184,36 @@ class Prestataire
     {
         if ($this->Users->removeElement($user)) {
             $user->removePrestataire($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Etablissement>
+     */
+    public function getEtablissements(): Collection
+    {
+        return $this->Etablissements;
+    }
+
+    public function addEtablissement(Etablissement $etablissement): static
+    {
+        if (!$this->Etablissements->contains($etablissement)) {
+            $this->Etablissements->add($etablissement);
+            $etablissement->setPrestataire($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEtablissement(Etablissement $etablissement): static
+    {
+        if ($this->Etablissements->removeElement($etablissement)) {
+            // set the owning side to null (unless already changed)
+            if ($etablissement->getPrestataire() === $this) {
+                $etablissement->setPrestataire(null);
+            }
         }
 
         return $this;

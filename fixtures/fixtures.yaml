@@ -1,0 +1,19 @@
+\App\Entity\Etablissement:
+  Etablissement{1..4}:
+    nom_etablissement: 'test <current()>'
+    adresse: '31gtest'
+    image: 'fezee'
+    heure_open: '<(new DateTime("12:10:10"))>'
+    heure_close: '<(new DateTime("15:10:10"))>'
+    prixH: '100€'
+    Prestataire: '@Prestataire<current()>'
+\App\Entity\Prestataire:
+  Prestataire{1..4}:
+    kbis: 'hjuikolp'
+    nom_entreprise: '<company()>'
+    image: 'tgyhujiko.jpg'
+    adresse: '<address()>'
+    ville: '<city()>'
+    code_postal: '99852'
+    telephone: '454545455'
+    mail: '<email()>'

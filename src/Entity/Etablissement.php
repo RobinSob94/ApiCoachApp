@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use App\Repository\EtablissementRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -10,7 +12,19 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: EtablissementRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new GetCollection(
+            uriTemplate: '/prestataires/{id}/etablissements',
+            uriVariables: [
+                'id' => new Link (fromClass: Prestataire::class, fromProperty: 'id', toProperty: 'prestataire')
+            ]
+        )
+    ]
+)]
+
+
+
 class Etablissement
 {
     #[ORM\Id]
@@ -28,7 +42,7 @@ class Etablissement
     private ?string $image = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
-    private ?\DateTimeInterface $heure�_open = null;
+    private ?\DateTimeInterface $heure_open = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE)]
     private ?\DateTimeInterface $heure_close = null;
@@ -42,14 +56,16 @@ class Etablissement
     #[ORM\ManyToMany(targetEntity: Services::class, inversedBy: 'Etablissements')]
     private Collection $Services;
 
-    #[ORM\ManyToMany(targetEntity: Prestataire::class, inversedBy: 'Etablissements')]
-    private Collection $Prestataire;
+    #[ORM\ManyToOne(inversedBy: 'Etablissements')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Prestataire $prestataire = null;
+
+
 
     public function __construct()
     {
         $this->Equipiers = new ArrayCollection();
         $this->Services = new ArrayCollection();
-        $this->Prestataire = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -100,14 +116,14 @@ class Etablissement
         return $this;
     }
 
-    public function getHeure�Open(): ?\DateTimeInterface
+    public function getHeureOpen(): ?\DateTimeInterface
     {
-        return $this->heure�_open;
+        return $this->heure_open;
     }
 
-    public function setHeure�Open(\DateTimeInterface $heure�_open): static
+    public function setHeureOpen(\DateTimeInterface $heure_open): static
     {
-        $this->heure�_open = $heure�_open;
+        $this->heure_open = $heure_open;
 
         return $this;
     }
@@ -187,26 +203,14 @@ class Etablissement
         return $this;
     }
 
-    /**
-     * @return Collection<int, Prestataire>
-     */
-    public function getPrestataire(): Collection
+    public function getPrestataire(): ?Prestataire
     {
-        return $this->Prestataire;
+        return $this->prestataire;
     }
 
-    public function addPrestataire(Prestataire $prestataire): static
+    public function setPrestataire(?Prestataire $prestataire): static
     {
-        if (!$this->Prestataire->contains($prestataire)) {
-            $this->Prestataire->add($prestataire);
-        }
-
-        return $this;
-    }
-
-    public function removePrestataire(Prestataire $prestataire): static
-    {
-        $this->Prestataire->removeElement($prestataire);
+        $this->prestataire = $prestataire;
 
         return $this;
     }
