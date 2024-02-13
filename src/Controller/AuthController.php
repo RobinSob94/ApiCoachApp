@@ -20,7 +20,7 @@ class AuthController extends AbstractController
         $user = $entityManager->getRepository(User::class)->findOneBy(['email'=>$requestBody->email, 'password'=>$requestBody->password]);
 
         if (!$user) {
-            return new JsonResponse(['message' => 'Utilisateur non trouvé'], 404);
+            return new JsonResponse(['message' => 'Utilisateur non trouvé', 'status' => 404], 404);
         }
         $token = $jwtManager->create($user);
 
