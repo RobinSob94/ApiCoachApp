@@ -25,5 +25,7 @@ class AuthController extends AbstractController
         $token = $jwtManager->create($user);
 
         return new JsonResponse(['token' => $token]);
+
+
     }
 }
