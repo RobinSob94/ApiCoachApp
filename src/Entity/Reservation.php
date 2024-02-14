@@ -18,8 +18,8 @@ class Reservation
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $date_reservation = null;
+    #[ORM\Column]
+    private ?\DateTimeImmutable $date_reservation = null;
 
     #[ORM\Column]
     private ?float $note = null;
@@ -27,27 +27,34 @@ class Reservation
     #[ORM\Column(type: Types::TEXT)]
     private ?string $commentaire = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $heure_reservation = null;
+    #[ORM\Column]
+    private ?\DateTimeImmutable $heure_reservation = null;
 
-    #[ORM\ManyToMany(targetEntity: Equipiers::class, mappedBy: 'Reservation')]
-    private Collection $Equipiers;
 
-    #[ORM\ManyToMany(targetEntity: Reservation::class, mappedBy: 'Reservations')]
-    private Collection $Services;
 
-    #[ORM\ManyToMany(targetEntity: Services::class, mappedBy: 'Services')]
-    private Collection $Reservations;
+
+
 
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'Reservation')]
     private Collection $Users;
 
+    #[ORM\ManyToOne(inversedBy: 'reservations')]
+    private ?Equipiers $equipiers = null;
+
+    #[ORM\ManyToMany(targetEntity: Services::class, inversedBy: 'reservations')]
+    private Collection $services;
+
+    #[ORM\OneToMany(mappedBy: 'reservation', targetEntity: Equipiers::class)]
+    private Collection $equipier;
+
+
+
     public function __construct()
     {
         $this->Equipiers = new ArrayCollection();
-        $this->Services = new ArrayCollection();
-        $this->Reservations = new ArrayCollection();
         $this->Users = new ArrayCollection();
+        $this->services = new ArrayCollection();
+        $this->equipier = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -62,12 +69,12 @@ class Reservation
         return $this;
     }
 
-    public function getDateReservation(): ?\DateTimeInterface
+    public function getDateReservation(): ?\DateTimeImmutable
     {
         return $this->date_reservation;
     }
 
-    public function setDateReservation(\DateTimeInterface $date_reservation): static
+    public function setDateReservation(\DateTimeImmutable $date_reservation): static
     {
         $this->date_reservation = $date_reservation;
 
@@ -98,95 +105,18 @@ class Reservation
         return $this;
     }
 
-    public function getHeureReservation(): ?\DateTimeInterface
+    public function getHeureReservation(): ?\DateTimeImmutable
     {
         return $this->heure_reservation;
     }
 
-    public function setHeureReservation(\DateTimeInterface $heure_reservation): static
+    public function setHeureReservation(\DateTimeImmutable $heure_reservation): static
     {
         $this->heure_reservation = $heure_reservation;
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, Equipiers>
-     */
-    public function getEquipiers(): Collection
-    {
-        return $this->Equipiers;
-    }
-
-    public function addEquipier(Equipiers $equipier): static
-    {
-        if (!$this->Equipiers->contains($equipier)) {
-            $this->Equipiers->add($equipier);
-            $equipier->addReservation($this);
-        }
-
-        return $this;
-    }
-
-    public function removeEquipier(Equipiers $equipier): static
-    {
-        if ($this->Equipiers->removeElement($equipier)) {
-            $equipier->removeReservation($this);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, self>
-     */
-    public function getServices(): Collection
-    {
-        return $this->Services;
-    }
-
-    public function addService(self $service): static
-    {
-        if (!$this->Services->contains($service)) {
-            $this->Services->add($service);
-        }
-
-        return $this;
-    }
-
-    public function removeService(self $service): static
-    {
-        $this->Services->removeElement($service);
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, self>
-     */
-    public function getReservations(): Collection
-    {
-        return $this->Reservations;
-    }
-
-    public function addReservation(self $reservation): static
-    {
-        if (!$this->Reservations->contains($reservation)) {
-            $this->Reservations->add($reservation);
-            $reservation->addService($this);
-        }
-
-        return $this;
-    }
-
-    public function removeReservation(self $reservation): static
-    {
-        if ($this->Reservations->removeElement($reservation)) {
-            $reservation->removeService($this);
-        }
-
-        return $this;
-    }
 
     /**
      * @return Collection<int, User>
@@ -214,4 +144,72 @@ class Reservation
 
         return $this;
     }
+
+    public function getEquipiers(): ?Equipiers
+    {
+        return $this->equipiers;
+    }
+
+    public function setEquipiers(?Equipiers $equipiers): static
+    {
+        $this->equipiers = $equipiers;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Services>
+     */
+    public function getServices(): Collection
+    {
+        return $this->services;
+    }
+
+    public function addService(Services $service): static
+    {
+        if (!$this->services->contains($service)) {
+            $this->services->add($service);
+        }
+
+        return $this;
+    }
+
+    public function removeService(Services $service): static
+    {
+        $this->services->removeElement($service);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Equipiers>
+     */
+    public function getEquipier(): Collection
+    {
+        return $this->equipier;
+    }
+
+    public function addEquipier(Equipiers $equipier): static
+    {
+        if (!$this->equipier->contains($equipier)) {
+            $this->equipier->add($equipier);
+            $equipier->setReservation($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEquipier(Equipiers $equipier): static
+    {
+        if ($this->equipier->removeElement($equipier)) {
+            // set the owning side to null (unless already changed)
+            if ($equipier->getReservation() === $this) {
+                $equipier->setReservation(null);
+            }
+        }
+
+        return $this;
+    }
+
+
 }
