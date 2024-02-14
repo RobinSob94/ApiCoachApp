@@ -3,13 +3,35 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Put;
+use ApiPlatform\Metadata\Link;
 use App\Repository\ServicesRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ServicesRepository::class)]
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new GetCollection(
+            uriTemplate: '/etablissements/{id}/service',
+            uriVariables: [
+                'id' => new Link (fromClass: Etablissement::class, fromProperty: 'id', toProperty: 'Etablissements')
+            ]
+            ),
+        new Post(),
+        new Delete(),
+        new Patch(), 
+        new Put()
+    ]
+)]
 class Services
 {
     #[ORM\Id]
