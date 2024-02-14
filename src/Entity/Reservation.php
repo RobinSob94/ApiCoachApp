@@ -35,8 +35,6 @@ class Reservation
 
 
 
-    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'Reservation')]
-    private Collection $Users;
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     private ?Equipiers $equipiers = null;
@@ -47,12 +45,14 @@ class Reservation
     #[ORM\OneToMany(mappedBy: 'reservation', targetEntity: Equipiers::class)]
     private Collection $equipier;
 
+    #[ORM\ManyToOne(inversedBy: 'reservations')]
+    private ?User $users = null;
+
 
 
     public function __construct()
     {
         $this->Equipiers = new ArrayCollection();
-        $this->Users = new ArrayCollection();
         $this->services = new ArrayCollection();
         $this->equipier = new ArrayCollection();
     }
@@ -118,32 +118,7 @@ class Reservation
     }
 
 
-    /**
-     * @return Collection<int, User>
-     */
-    public function getUsers(): Collection
-    {
-        return $this->Users;
-    }
-
-    public function addUser(User $user): static
-    {
-        if (!$this->Users->contains($user)) {
-            $this->Users->add($user);
-            $user->addReservation($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUser(User $user): static
-    {
-        if ($this->Users->removeElement($user)) {
-            $user->removeReservation($this);
-        }
-
-        return $this;
-    }
+   
 
     public function getEquipiers(): ?Equipiers
     {
@@ -207,6 +182,18 @@ class Reservation
                 $equipier->setReservation(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getUsers(): ?User
+    {
+        return $this->users;
+    }
+
+    public function setUsers(?User $users): static
+    {
+        $this->users = $users;
 
         return $this;
     }

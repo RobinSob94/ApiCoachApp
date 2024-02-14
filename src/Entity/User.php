@@ -48,16 +48,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    #[ORM\ManyToMany(targetEntity: Reservation::class, inversedBy: 'Users')]
-    private Collection $Reservation;
+  
 
     #[ORM\ManyToMany(targetEntity: Prestataire::class, inversedBy: 'Users')]
     private Collection $Prestataire;
 
+    #[ORM\OneToMany(mappedBy: 'users', targetEntity: Reservation::class)]
+    private Collection $reservations;
+
     public function __construct()
     {
-        $this->Reservation = new ArrayCollection();
         $this->Prestataire = new ArrayCollection();
+        $this->reservations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -178,30 +180,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
 
     /**
-     * @return Collection<int, Reservation>
-     */
-    public function getReservation(): Collection
-    {
-        return $this->Reservation;
-    }
-
-    public function addReservation(Reservation $reservation): static
-    {
-        if (!$this->Reservation->contains($reservation)) {
-            $this->Reservation->add($reservation);
-        }
-
-        return $this;
-    }
-
-    public function removeReservation(Reservation $reservation): static
-    {
-        $this->Reservation->removeElement($reservation);
-
-        return $this;
-    }
-
-    /**
      * @return Collection<int, Prestataire>
      */
     public function getPrestataire(): Collection
@@ -252,5 +230,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getUserIdentifier(): string
     {
         return (string) $this->email;
+    }
+
+    /**
+     * @return Collection<int, Reservation>
+     */
+    public function getReservations(): Collection
+    {
+        return $this->reservations;
+    }
+
+    public function addReservation(Reservation $reservation): static
+    {
+        if (!$this->reservations->contains($reservation)) {
+            $this->reservations->add($reservation);
+            $reservation->setUsers($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReservation(Reservation $reservation): static
+    {
+        if ($this->reservations->removeElement($reservation)) {
+            // set the owning side to null (unless already changed)
+            if ($reservation->getUsers() === $this) {
+                $reservation->setUsers(null);
+            }
+        }
+
+        return $this;
     }
 }

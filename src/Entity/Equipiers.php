@@ -28,8 +28,6 @@ class Equipiers
 
 
 
-    #[ORM\ManyToMany(targetEntity: Etablissement::class, inversedBy: 'equipiers')]
-    private Collection $Etablissement;
 
     #[ORM\Column(type: Types::ARRAY)]
     private array $jours_travail = [];
@@ -40,11 +38,13 @@ class Equipiers
     #[ORM\ManyToOne(inversedBy: 'equipier')]
     private ?Reservation $reservation = null;
 
+    #[ORM\ManyToOne(inversedBy: 'equipiers')]
+    private ?Etablissement $etablissement = null;
+
 
 
     public function __construct()
     {
-        $this->Etablissement = new ArrayCollection();
         $this->reservations = new ArrayCollection();
     }
 
@@ -85,30 +85,6 @@ class Equipiers
         return $this;
     }
 
-
-    /**
-     * @return Collection<int, Etablissement>
-     */
-    public function getEtablissement(): Collection
-    {
-        return $this->Etablissement;
-    }
-
-    public function addEtablissement(Etablissement $etablissement): static
-    {
-        if (!$this->Etablissement->contains($etablissement)) {
-            $this->Etablissement->add($etablissement);
-        }
-
-        return $this;
-    }
-
-    public function removeEtablissement(Etablissement $etablissement): static
-    {
-        $this->Etablissement->removeElement($etablissement);
-
-        return $this;
-    }
 
     public function getJoursTravail(): array
     {
@@ -160,6 +136,18 @@ class Equipiers
     public function setReservation(?Reservation $reservation): static
     {
         $this->reservation = $reservation;
+
+        return $this;
+    }
+
+    public function getEtablissement(): ?Etablissement
+    {
+        return $this->etablissement;
+    }
+
+    public function setEtablissement(?Etablissement $etablissement): static
+    {
+        $this->etablissement = $etablissement;
 
         return $this;
     }
