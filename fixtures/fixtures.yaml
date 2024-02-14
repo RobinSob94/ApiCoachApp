@@ -17,3 +17,37 @@
     code_postal: '99852'
     telephone: '454545455'
     mail: '<email()>'
+
+
+\App\Entity\User:
+  User{1..4}:
+    id: '<current()>'
+    nom: 'nom <current()>'
+    prenom: '<name()>'
+    email: '<email()>'
+    updatedAt: '<(new DateTimeImmutable("2024-02-13T12:00:00+00:00"))>'
+    createAt: '<(new DateTimeImmutable("2024-02-13T12:00:00+00:00"))>'
+    pseudo: 'pseudo <current()>'
+    roles: '[User]'
+    password: 'azerty'
+\App\Entity\Reservation:
+  Reservation{1..4}:
+    id: '<current()>'
+    date_reservation: '<(new DateTimeImmutable("2024-02-13T12:00:00+00:00"))>'
+    note: '4.2'
+    commentaire: 'Franchement ça pue mais ca passe'
+    heure_reservation: '<(new DateTimeImmutable("2024-02-13T12:00:00+00:00"))>'
+
+
+\App\Entity\Equipiers:
+  Equipiers{1..4}:
+    id: '<current()>'
+    jours_travail: '["lundi","mardi","mercredi","jeudi","vendredi"]'
+    nom: 'Yamato Cannon'
+    image: 'yamatocannon.jpg'
+\App\Entity\Services:
+  Services{1..4}:
+    id: '<current()>'
+    libelle: 'nourriture'
+    icon: 'bouffe.jpg'
+    prix: '3.50€'

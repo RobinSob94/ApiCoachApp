@@ -29,9 +29,14 @@ class Services
     #[ORM\ManyToMany(targetEntity: Etablissement::class, mappedBy: 'Services')]
     private Collection $Etablissements;
 
+    #[ORM\ManyToMany(targetEntity: Reservation::class, mappedBy: 'services')]
+    private Collection $reservations;
+
+
     public function __construct()
     {
         $this->Etablissements = new ArrayCollection();
+        $this->reservations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -108,4 +113,33 @@ class Services
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, Reservation>
+     */
+    public function getReservations(): Collection
+    {
+        return $this->reservations;
+    }
+
+    public function addReservation(Reservation $reservation): static
+    {
+        if (!$this->reservations->contains($reservation)) {
+            $this->reservations->add($reservation);
+            $reservation->addService($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReservation(Reservation $reservation): static
+    {
+        if ($this->reservations->removeElement($reservation)) {
+            $reservation->removeService($this);
+        }
+
+        return $this;
+    }
+
+
 }
