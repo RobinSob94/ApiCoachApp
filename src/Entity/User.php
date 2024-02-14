@@ -3,7 +3,12 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Put;
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -13,7 +18,16 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new Get(),
+        new GetCollection(),
+        new Post(),
+        new Delete(),
+        new Patch(), 
+        new Put()
+    ]
+)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -48,16 +62,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    #[ORM\ManyToMany(targetEntity: Reservation::class, inversedBy: 'Users')]
-    private Collection $Reservation;
+  
 
     #[ORM\ManyToMany(targetEntity: Prestataire::class, inversedBy: 'Users')]
     private Collection $Prestataire;
 
+    #[ORM\OneToMany(mappedBy: 'users', targetEntity: Reservation::class)]
+    private Collection $reservations;
+
     public function __construct()
     {
-        $this->Reservation = new ArrayCollection();
         $this->Prestataire = new ArrayCollection();
+        $this->reservations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -178,30 +194,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
 
     /**
-     * @return Collection<int, Reservation>
-     */
-    public function getReservation(): Collection
-    {
-        return $this->Reservation;
-    }
-
-    public function addReservation(Reservation $reservation): static
-    {
-        if (!$this->Reservation->contains($reservation)) {
-            $this->Reservation->add($reservation);
-        }
-
-        return $this;
-    }
-
-    public function removeReservation(Reservation $reservation): static
-    {
-        $this->Reservation->removeElement($reservation);
-
-        return $this;
-    }
-
-    /**
      * @return Collection<int, Prestataire>
      */
     public function getPrestataire(): Collection
@@ -252,5 +244,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getUserIdentifier(): string
     {
         return (string) $this->email;
+    }
+
+    /**
+     * @return Collection<int, Reservation>
+     */
+    public function getReservations(): Collection
+    {
+        return $this->reservations;
+    }
+
+    public function addReservation(Reservation $reservation): static
+    {
+        if (!$this->reservations->contains($reservation)) {
+            $this->reservations->add($reservation);
+            $reservation->setUsers($this);
+        }
+
+        return $this;
+    }
+
+    public function removeReservation(Reservation $reservation): static
+    {
+        if ($this->reservations->removeElement($reservation)) {
+            // set the owning side to null (unless already changed)
+            if ($reservation->getUsers() === $this) {
+                $reservation->setUsers(null);
+            }
+        }
+
+        return $this;
     }
 }

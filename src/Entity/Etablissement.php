@@ -4,6 +4,11 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Put;
 use ApiPlatform\Metadata\Link;
 use App\Repository\EtablissementRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -14,12 +19,18 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: EtablissementRepository::class)]
 #[ApiResource(
     operations: [
+        new Get(),
+        new GetCollection(),
         new GetCollection(
             uriTemplate: '/prestataires/{id}/etablissements',
             uriVariables: [
                 'id' => new Link (fromClass: Prestataire::class, fromProperty: 'id', toProperty: 'prestataire')
             ]
-        )
+            ),
+        new Post(),
+        new Delete(),
+        new Patch(), 
+        new Put()
     ]
 )]
 
@@ -50,9 +61,6 @@ class Etablissement
     #[ORM\Column(length: 255)]
     private ?string $prixH = null;
 
-    #[ORM\ManyToMany(targetEntity: Equipiers::class, mappedBy: 'Etablissement')]
-    private Collection $Equipiers;
-
     #[ORM\ManyToMany(targetEntity: Services::class, inversedBy: 'Etablissements')]
     private Collection $Services;
 
@@ -60,12 +68,15 @@ class Etablissement
     #[ORM\JoinColumn(nullable: false)]
     private ?Prestataire $prestataire = null;
 
+    #[ORM\OneToMany(mappedBy: 'etablissement', targetEntity: Equipiers::class)]
+    private Collection $equipiers;
+
 
 
     public function __construct()
     {
-        $this->Equipiers = new ArrayCollection();
         $this->Services = new ArrayCollection();
+        $this->equipiers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -152,33 +163,7 @@ class Etablissement
         return $this;
     }
 
-    /**
-     * @return Collection<int, Equipiers>
-     */
-    public function getEquipiers(): Collection
-    {
-        return $this->Equipiers;
-    }
-
-    public function addEquipier(Equipiers $equipier): static
-    {
-        if (!$this->Equipiers->contains($equipier)) {
-            $this->Equipiers->add($equipier);
-            $equipier->addEtablissement($this);
-        }
-
-        return $this;
-    }
-
-    public function removeEquipier(Equipiers $equipier): static
-    {
-        if ($this->Equipiers->removeElement($equipier)) {
-            $equipier->removeEtablissement($this);
-        }
-
-        return $this;
-    }
-
+  
     /**
      * @return Collection<int, Services>
      */
@@ -211,6 +196,36 @@ class Etablissement
     public function setPrestataire(?Prestataire $prestataire): static
     {
         $this->prestataire = $prestataire;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Equipiers>
+     */
+    public function getEquipiers(): Collection
+    {
+        return $this->equipiers;
+    }
+
+    public function addEquipier(Equipiers $equipier): static
+    {
+        if (!$this->equipiers->contains($equipier)) {
+            $this->equipiers->add($equipier);
+            $equipier->setEtablissement($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEquipier(Equipiers $equipier): static
+    {
+        if ($this->equipiers->removeElement($equipier)) {
+            // set the owning side to null (unless already changed)
+            if ($equipier->getEtablissement() === $this) {
+                $equipier->setEtablissement(null);
+            }
+        }
 
         return $this;
     }
