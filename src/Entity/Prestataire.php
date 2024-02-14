@@ -18,7 +18,7 @@ class Prestataire
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $kbis = null;
+    private ?array $kbis = null;
 
     #[ORM\Column(length: 255)]
     private ?string $nom_entreprise = null;
@@ -32,11 +32,11 @@ class Prestataire
     #[ORM\Column(length: 255)]
     private ?string $ville = null;
 
-    #[ORM\Column]
-    private ?int $code_postal = null;
+    #[ORM\Column(length: 5)]
+    private ?string $code_postal = null;
 
-    #[ORM\Column]
-    private ?int $telephone = null;
+    #[ORM\Column(length: 12)]
+    private ?string $telephone = null;
 
     #[ORM\Column(length: 255)]
     private ?string $mail = null;
@@ -66,12 +66,12 @@ class Prestataire
         return $this;
     }
 
-    public function getKbis(): ?string
+    public function getKbis(): ?array
     {
         return $this->kbis;
     }
 
-    public function setKbis(string $kbis): static
+    public function setKbis(array $kbis): static
     {
         $this->kbis = $kbis;
 
@@ -126,24 +126,24 @@ class Prestataire
         return $this;
     }
 
-    public function getCodePostal(): ?int
+    public function getCodePostal(): ?string
     {
         return $this->code_postal;
     }
 
-    public function setCodePostal(int $code_postal): static
+    public function setCodePostal(string $code_postal): static
     {
         $this->code_postal = $code_postal;
 
         return $this;
     }
 
-    public function getTelephone(): ?int
+    public function getTelephone(): ?string
     {
         return $this->telephone;
     }
 
-    public function setTelephone(int $telephone): static
+    public function setTelephone(string $telephone): static
     {
         $this->telephone = $telephone;
 
