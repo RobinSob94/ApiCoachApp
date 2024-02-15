@@ -24,7 +24,7 @@ use Doctrine\ORM\Mapping as ORM;
         new GetCollection(
             uriTemplate: '/prestataires/{id}/etablissements',
             uriVariables: [
-                'id' => new Link (fromClass: Prestataire::class, fromProperty: 'id', toProperty: 'prestataire')
+                'id' => new Link (fromProperty: 'id', toProperty: 'prestataire', fromClass: Prestataire::class)
             ]
             ),
         new Post(),
@@ -61,8 +61,7 @@ class Etablissement
     #[ORM\Column(length: 255)]
     private ?string $prixH = null;
 
-    #[ORM\ManyToMany(targetEntity: Services::class, inversedBy: 'Etablissements')]
-    private Collection $Services;
+
 
     #[ORM\ManyToOne(inversedBy: 'Etablissements')]
     #[ORM\JoinColumn(nullable: false)]
@@ -71,12 +70,15 @@ class Etablissement
     #[ORM\OneToMany(mappedBy: 'etablissement', targetEntity: Equipiers::class)]
     private Collection $equipiers;
 
+    #[ORM\ManyToMany(targetEntity: Services::class, inversedBy: 'etablissements')]
+    private Collection $services;
+
 
 
     public function __construct()
     {
-        $this->Services = new ArrayCollection();
         $this->equipiers = new ArrayCollection();
+        $this->services = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -164,29 +166,6 @@ class Etablissement
     }
 
   
-    /**
-     * @return Collection<int, Services>
-     */
-    public function getServices(): Collection
-    {
-        return $this->Services;
-    }
-
-    public function addService(Services $service): static
-    {
-        if (!$this->Services->contains($service)) {
-            $this->Services->add($service);
-        }
-
-        return $this;
-    }
-
-    public function removeService(Services $service): static
-    {
-        $this->Services->removeElement($service);
-
-        return $this;
-    }
 
     public function getPrestataire(): ?Prestataire
     {
@@ -226,6 +205,30 @@ class Etablissement
                 $equipier->setEtablissement(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Services>
+     */
+    public function getServices(): Collection
+    {
+        return $this->services;
+    }
+
+    public function addService(Services $service): static
+    {
+        if (!$this->services->contains($service)) {
+            $this->services->add($service);
+        }
+
+        return $this;
+    }
+
+    public function removeService(Services $service): static
+    {
+        $this->services->removeElement($service);
 
         return $this;
     }

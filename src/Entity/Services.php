@@ -23,7 +23,7 @@ use Doctrine\ORM\Mapping as ORM;
         new GetCollection(
             uriTemplate: '/etablissements/{id}/service',
             uriVariables: [
-                'id' => new Link (fromClass: Etablissement::class, fromProperty: 'id', toProperty: 'Etablissements')
+                'id' => new Link (fromProperty: 'id', toProperty: 'Etablissement', fromClass: Etablissement::class)
             ]
             ),
         new Post(),
@@ -48,17 +48,18 @@ class Services
     #[ORM\Column(length: 255)]
     private ?string $prix = null;
 
-    #[ORM\ManyToMany(targetEntity: Etablissement::class, mappedBy: 'Services')]
-    private Collection $Etablissements;
 
     #[ORM\ManyToMany(targetEntity: Reservation::class, mappedBy: 'services')]
     private Collection $reservations;
 
+    #[ORM\ManyToMany(targetEntity: Etablissement::class, mappedBy: 'services')]
+    private Collection $etablissements;
+
 
     public function __construct()
     {
-        $this->Etablissements = new ArrayCollection();
         $this->reservations = new ArrayCollection();
+        $this->etablissements = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -109,32 +110,6 @@ class Services
         return $this;
     }
 
-    /**
-     * @return Collection<int, Etablissement>
-     */
-    public function getEtablissements(): Collection
-    {
-        return $this->Etablissements;
-    }
-
-    public function addEtablissement(Etablissement $etablissement): static
-    {
-        if (!$this->Etablissements->contains($etablissement)) {
-            $this->Etablissements->add($etablissement);
-            $etablissement->addService($this);
-        }
-
-        return $this;
-    }
-
-    public function removeEtablissement(Etablissement $etablissement): static
-    {
-        if ($this->Etablissements->removeElement($etablissement)) {
-            $etablissement->removeService($this);
-        }
-
-        return $this;
-    }
 
     /**
      * @return Collection<int, Reservation>
@@ -158,6 +133,33 @@ class Services
     {
         if ($this->reservations->removeElement($reservation)) {
             $reservation->removeService($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Etablissement>
+     */
+    public function getEtablissements(): Collection
+    {
+        return $this->etablissements;
+    }
+
+    public function addEtablissement(Etablissement $etablissement): static
+    {
+        if (!$this->etablissements->contains($etablissement)) {
+            $this->etablissements->add($etablissement);
+            $etablissement->addService($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEtablissement(Etablissement $etablissement): static
+    {
+        if ($this->etablissements->removeElement($etablissement)) {
+            $etablissement->removeService($this);
         }
 
         return $this;

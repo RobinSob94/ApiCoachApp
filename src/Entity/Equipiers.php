@@ -18,11 +18,11 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: EquipiersRepository::class)]
 #[ApiResource(
     operations: [
+        new Delete(),
         new Get(),
         new GetCollection(),
-        new Post(),
-        new Delete(),
         new Patch(), 
+        new Post(),
         new Put()
     ]
 )]
