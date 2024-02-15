@@ -145,9 +145,8 @@ yarn-error.log
 ###< lexik/jwt-authentication-bundle ###
 
 # PHP Storm files
-.idea
+.idea/
 ###> phpunit/phpunit ###
-/phpunit.xml
 .phpunit.result.cache
 ###< phpunit/phpunit ###
 
