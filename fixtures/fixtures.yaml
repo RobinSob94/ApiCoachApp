@@ -53,4 +53,4 @@
     libelle: 'nourriture'
     icon: 'bouffe.jpg'
     prix: '3.50€'
-    Etablissement: '@Etablissement<current()>'
+    etablissements: ['@Etablissement<current()>']

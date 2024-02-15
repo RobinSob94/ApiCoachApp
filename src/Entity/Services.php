@@ -23,7 +23,7 @@ use Doctrine\ORM\Mapping as ORM;
         new GetCollection(
             uriTemplate: '/etablissements/{id}/service',
             uriVariables: [
-                'id' => new Link (fromProperty: 'id', toProperty: 'Etablissement', fromClass: Etablissement::class)
+                'id' => new Link (fromProperty: 'id', toProperty: 'etablissements', fromClass: Etablissement::class)
             ]
             ),
         new Post(),
