@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -12,18 +13,12 @@ use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 
 class AuthController extends AbstractController
 {
-#[Route("/api/token", name:"app_generate_token", methods:["POST"])]
-    public function generateToken(JWTTokenManagerInterface $jwtManager, EntityManagerInterface $entityManager): JsonResponse
+#[Route("/user/current", name:"get_current_user", methods:["GET"])]
+    public function getCurrentUser(): JsonResponse
     {
-        $request = Request::createFromGlobals();
-    $requestBody = json_decode($request->getContent());
-        $user = $entityManager->getRepository(User::class)->findOneBy(['email'=>$requestBody->email, 'password'=>$requestBody->password]);
-
-        if (!$user) {
-            return new JsonResponse(['message' => 'Utilisateur non trouvé', 'status' => 404], 404);
-        }
-        $token = $jwtManager->create($user);
-
-        return new JsonResponse(['token' => $token]);
+        $user = $this->getUser();
+        $userId1 = $user->getId();
+        $userId = $user->getUserIdentifier();
+        return new JsonResponse(['user' => $userId, 'userId' => $userId1]);
     }
 }
