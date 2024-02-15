@@ -1,5 +1,6 @@
 \App\Entity\Etablissement:
   Etablissement{1..4}:
+    id: '<current()>'
     nom_etablissement: 'test <current()>'
     adresse: '31gtest'
     image: 'fezee'
@@ -9,6 +10,7 @@
     Prestataire: '@Prestataire<current()>'
 \App\Entity\Prestataire:
   Prestataire{1..4}:
+    id: '<current()>'
     kbis: 'hjuikolp'
     nom_entreprise: '<company()>'
     image: 'tgyhujiko.jpg'
@@ -43,7 +45,7 @@
   Equipiers{1..4}:
     id: '<current()>'
     jours_travail: '["lundi","mardi","mercredi","jeudi","vendredi"]'
-    nom: 'Yamato Cannon'
+    nom: 'Yamato'
     image: 'yamatocannon.jpg'
 \App\Entity\Services:
   Services{1..4}:
@@ -51,3 +53,4 @@
     libelle: 'nourriture'
     icon: 'bouffe.jpg'
     prix: '3.50€'
+    etablissements: ['@Etablissement<current()>']

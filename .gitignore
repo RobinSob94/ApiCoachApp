@@ -146,3 +146,8 @@ yarn-error.log
 
 # PHP Storm files
 .idea
+###> phpunit/phpunit ###
+/phpunit.xml
+.phpunit.result.cache
+###< phpunit/phpunit ###
+

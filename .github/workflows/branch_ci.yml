@@ -1,0 +1,25 @@
+name: Symfony api CI
+
+on:
+    push:
+      branches-ignore:
+      - master 
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+        - name: Checkout Repository
+          uses: actions/checkout@v3
+
+        - name: Set up PHP
+          uses: shivammathur/setup-php@v2
+          with:
+            php-version: '7.4'
+
+        - name: Install dependencies
+          run: composer install --no-ansi--no-interaction --no-progress --prefer-dist
+        - name: Run tests
+          run: ./vendor/bin/phpunit
+
+          
